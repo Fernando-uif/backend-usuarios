@@ -1,9 +1,10 @@
 import { Request, Response } from "express";
+import pool from '../db/connection';
 
-export const getUsuarios = (req: Request, res: Response) => {
-  res.json({
-    msg: "getUsuarios",
-  });
+export const getUsuarios = async (req: Request, res: Response) => {
+  const {rows} = await pool.query('SELECT * FROM users')
+  console.log(rows);
+  res.json(rows);
 };
 
 export const getUsuario = (req: Request, res: Response) => {

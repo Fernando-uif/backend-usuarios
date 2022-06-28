@@ -1,6 +1,7 @@
 import express, { Application } from "express";
 import userRoutes from "../routes/usuarios";
-import cors from 'cors';
+import cors from "cors";
+import pool from "../db/connection";
 class Server {
   private app: Application;
   private port: string;
@@ -12,12 +13,24 @@ class Server {
     this.app = express();
     this.port = process.env.PORT || "8000";
 
-    // Metodos Iniciales
+    // database connection
+    this.dbConnection();
+
+    // initial methods
     this.middlewares();
     this.routes();
   }
 
-  middlewares(){
+  async dbConnection() {
+    try {
+      await pool;
+      console.log("database online");
+      
+    } catch (error) {
+      console.log(error, "No se ha podido establecer la conexion");
+    }
+  }
+  middlewares() {
     // CORS
     this.app.use(cors());
 
@@ -25,12 +38,11 @@ class Server {
     this.app.use(express.json());
 
     // Carpeta publica
-    this.app.use(express.static('public'))
+    this.app.use(express.static("public"));
   }
-  
+
   routes() {
     this.app.use(this.apiPaths.usuarios, userRoutes);
-
   }
   listen() {
     this.app.listen(this.port, () => {
